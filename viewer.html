@@ -21,8 +21,9 @@ header{padding:12px 16px;border-bottom:1px solid var(--line);background:rgba(10,
 .tab:hover{color:var(--ink);border-color:var(--blue)}
 .tab.on{background:var(--grad);color:#04121a;border:none}
 main{flex:1;display:flex;align-items:center;justify-content:center;position:relative;min-height:0;padding:14px}
-#stage{height:100%;display:flex;align-items:center;justify-content:center;position:relative}
-#cv{max-width:100%;max-height:100%;border-radius:6px;box-shadow:0 14px 40px rgba(0,0,0,.5);background:#fff;touch-action:pan-y}
+#stage{height:100%;display:flex;align-items:center;justify-content:center;position:relative;width:100%}
+#pageimg{max-width:100%;max-height:100%;border-radius:6px;box-shadow:0 14px 40px rgba(0,0,0,.5);background:#fff;touch-action:pan-y;transition:opacity .12s}
+#pageimg.fade{opacity:.35}
 #loading{position:absolute;font-size:13px;color:var(--muted);font-family:monospace}
 .nav{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:rgba(17,26,41,.85);color:var(--ink);font-size:22px;cursor:pointer;z-index:5;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .nav:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
@@ -46,7 +47,7 @@ footer a{color:var(--mint);text-decoration:none;font-weight:600}
 </header>
 <main>
   <button class="nav" id="prev" aria-label="Previous page">‹</button>
-  <div id="stage"><canvas id="cv"></canvas><div id="loading">Loading…</div></div>
+  <div id="stage"><img id="pageimg" alt="page"><div id="loading">Loading…</div></div>
   <button class="nav" id="next" aria-label="Next page">›</button>
 </main>
 <div class="hint">← → arrows · swipe · or tap the side buttons. Tabs switch papers.</div>
@@ -56,31 +57,28 @@ footer a{color:var(--mint);text-decoration:none;font-weight:600}
   <a id="dl" target="_blank" rel="noopener">⬇ Download PDF</a>
 </footer>
 
-<script type="module">
-import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs';
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs';
-
+<script>
 const PAPERS = [
-  {f:'2025_JNI_Alzheimer_scRNAseq.pdf',        tab:'JNI · 2025',        title:'J. Neuroimmunology (2025) — CD8⁺ Trm ↔ choroid plexus in Alzheimer’s'},
-  {f:'2025_Allergy_AD_Treg.pdf',               tab:'Allergy · 2025',    title:'Allergy (2025) — Dysfunctional Tregs in atopic dermatitis'},
-  {f:'2024_eBioMedicine_psoriasis_Treg.pdf',   tab:'eBioMedicine · 2024',title:'eBioMedicine (2024) — Treg profiling in psoriasis'},
-  {f:'2024_Xenotransplantation_tofacitinib.pdf',tab:'Xeno · 2024',      title:'Xenotransplantation (2024) — Tofacitinib regimen, allo-islet Tx'},
-  {f:'2024_JEADV_melanoma_immune.pdf',         tab:'JEADV · 2024',      title:'JEADV (2024) — Tumour–immune spatial transcriptomics, melanoma'},
-  {f:'2022_JEADV_melanoma_spatial.pdf',        tab:'JEADV · 2022',      title:'JEADV (2022) — Intra-tumoral heterogeneity, melanoma'},
-  {f:'2021_CurrDiabRep_xeno_review.pdf',       tab:'Curr Diab Rep · 2021',title:'Current Diabetes Reports (2021) — Islet xenotransplantation review'},
-  {f:'2019_Islets_JAK3_isletTx.pdf',           tab:'Islets · 2019',     title:'Islets (2019) — JAK3 inhibitor immunosuppression, islet Tx'},
+  {n:'2025_JNI_Alzheimer_scRNAseq',        tab:'JNI · 2025',         title:'J. Neuroimmunology (2025) — CD8⁺ Trm ↔ choroid plexus in Alzheimer’s'},
+  {n:'2025_Allergy_AD_Treg',               tab:'Allergy · 2025',     title:'Allergy (2025) — Dysfunctional Tregs in atopic dermatitis'},
+  {n:'2024_eBioMedicine_psoriasis_Treg',   tab:'eBioMedicine · 2024',title:'eBioMedicine (2024) — Treg profiling in psoriasis'},
+  {n:'2024_Xenotransplantation_tofacitinib',tab:'Xeno · 2024',       title:'Xenotransplantation (2024) — Tofacitinib regimen, allo-islet Tx'},
+  {n:'2024_JEADV_melanoma_immune',         tab:'JEADV · 2024',       title:'JEADV (2024) — Tumour–immune spatial transcriptomics, melanoma'},
+  {n:'2022_JEADV_melanoma_spatial',        tab:'JEADV · 2022',       title:'JEADV (2022) — Intra-tumoral heterogeneity, melanoma'},
+  {n:'2021_CurrDiabRep_xeno_review',       tab:'Curr Diab Rep · 2021',title:'Current Diabetes Reports (2021) — Islet xenotransplantation review'},
+  {n:'2019_Islets_JAK3_isletTx',           tab:'Islets · 2019',      title:'Islets (2019) — JAK3 inhibitor immunosuppression, islet Tx'},
 ];
 const BLOB = 'https://github.com/AwesomeJun/Seong-Jun-CV/blob/main/papers/';
 
-const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
-const stage = document.getElementById('stage'), loading = document.getElementById('loading');
+const img = document.getElementById('pageimg'), loading = document.getElementById('loading');
 const tabsEl = document.getElementById('tabs'), pageinfo = document.getElementById('pageinfo');
-const titleEl = document.getElementById('title'), dl = document.getElementById('dl');
+const titleEl = document.getElementById('title'), dl = document.getElementById('dl'), stage = document.getElementById('stage');
 const prevBtn = document.getElementById('prev'), nextBtn = document.getElementById('next');
 
-let docIdx = 0, pageNum = 1, pdfDoc = null, numPages = 0, busy = false, token = 0;
+let manifest = {}, docIdx = 0, pageNum = 1, numPages = 0;
+const pad = n => String(n).padStart(3, '0');
+const src = (name, p) => `pages/${name}/${pad(p)}.jpg`;
 
-// build tabs
 PAPERS.forEach((p, i) => {
   const b = document.createElement('button');
   b.className = 'tab' + (i === 0 ? ' on' : '');
@@ -89,64 +87,51 @@ PAPERS.forEach((p, i) => {
   tabsEl.appendChild(b);
 });
 
-async function loadDoc(i){
+img.onload = () => { loading.style.display = 'none'; img.classList.remove('fade'); preloadNext(); };
+img.onerror = () => { loading.textContent = 'Could not load page.'; };
+
+function loadDoc(i){
   docIdx = i; pageNum = 1;
+  numPages = manifest[PAPERS[i].n] || 0;
   [...tabsEl.children].forEach((t, k) => t.classList.toggle('on', k === i));
   titleEl.textContent = PAPERS[i].title;
-  dl.href = BLOB + PAPERS[i].f;
-  loading.style.display = 'block'; loading.textContent = 'Loading…';
-  const myToken = ++token;
-  try{
-    pdfDoc = await pdfjsLib.getDocument('papers/' + PAPERS[i].f).promise;
-    if(myToken !== token) return;
-    numPages = pdfDoc.numPages;
-    await renderPage(1);
-  }catch(e){
-    loading.textContent = 'Could not load PDF. Use Download instead.';
-  }
+  dl.href = BLOB + PAPERS[i].n + '.pdf';
+  show();
 }
-
-async function renderPage(n){
-  if(!pdfDoc || busy) return;
-  busy = true;
-  pageNum = Math.max(1, Math.min(numPages, n));
-  const myToken = token;
-  const page = await pdfDoc.getPage(pageNum);
-  if(myToken !== token){ busy = false; return; }
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const v1 = page.getViewport({scale: 1});
-  const availW = stage.clientWidth - 8, availH = stage.clientHeight - 8;
-  const scale = Math.min(availW / v1.width, availH / v1.height);
-  const vp = page.getViewport({scale: scale * dpr});
-  cv.width = vp.width; cv.height = vp.height;
-  cv.style.width = (vp.width / dpr) + 'px';
-  cv.style.height = (vp.height / dpr) + 'px';
-  await page.render({canvasContext: ctx, viewport: vp}).promise;
-  loading.style.display = 'none';
+function show(){
+  const name = PAPERS[docIdx].n;
+  loading.style.display = 'block'; loading.textContent = 'Loading…';
+  img.classList.add('fade');
+  img.src = src(name, pageNum);
   pageinfo.textContent = `${pageNum} / ${numPages}`;
   prevBtn.disabled = pageNum <= 1;
   nextBtn.disabled = pageNum >= numPages;
-  busy = false;
 }
-
-const go = d => renderPage(pageNum + d);
+function preloadNext(){
+  if(pageNum < numPages){ const im = new Image(); im.src = src(PAPERS[docIdx].n, pageNum + 1); }
+}
+function go(d){
+  const np = pageNum + d;
+  if(np < 1 || np > numPages) return;
+  pageNum = np; show();
+}
 prevBtn.onclick = () => go(-1);
 nextBtn.onclick = () => go(1);
 window.addEventListener('keydown', e => {
   if(e.key === 'ArrowLeft') go(-1);
   else if(e.key === 'ArrowRight') go(1);
 });
-// touch swipe
 let tx = 0, ty = 0;
 stage.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, {passive:true});
 stage.addEventListener('touchend', e => {
   const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
   if(Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
 }, {passive:true});
-// re-render on resize
-let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => renderPage(pageNum), 150); });
 
-loadDoc(0);
+fetch('pages/manifest.json')
+  .then(r => r.json())
+  .then(m => { manifest = m; loadDoc(0); })
+  .catch(() => { loading.textContent = 'Could not load manifest.'; });
 </script>
 </body>
 </html>
