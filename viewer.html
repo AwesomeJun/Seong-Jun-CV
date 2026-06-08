@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Publications · page viewer — Seong-Jun Kang</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e16;--panel:#111a29;--ink:#e9eef7;--muted:#8a99b0;--line:#1d2a40;--mint:#2ee6c0;--blue:#5b8cff;--grad:linear-gradient(120deg,#5b8cff,#2ee6c0)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Inter",-apple-system,sans-serif;background:var(--bg);color:var(--ink);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+header{padding:12px 16px;border-bottom:1px solid var(--line);background:rgba(10,14,22,.9);backdrop-filter:blur(8px)}
+.htop{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.htop .name{font-weight:800;font-size:15px}
+.htop .name .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--grad);margin-right:7px;vertical-align:middle}
+.htop a{margin-left:auto;color:var(--muted);font-size:13px;text-decoration:none;font-weight:600}
+.htop a:hover{color:var(--ink)}
+.tabs{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px;scrollbar-width:thin}
+.tab{flex:0 0 auto;font-size:12.5px;font-weight:600;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer;white-space:nowrap;transition:all .15s}
+.tab:hover{color:var(--ink);border-color:var(--blue)}
+.tab.on{background:var(--grad);color:#04121a;border:none}
+main{flex:1;display:flex;align-items:center;justify-content:center;position:relative;min-height:0;padding:14px}
+#stage{height:100%;display:flex;align-items:center;justify-content:center;position:relative}
+#cv{max-width:100%;max-height:100%;border-radius:6px;box-shadow:0 14px 40px rgba(0,0,0,.5);background:#fff;touch-action:pan-y}
+#loading{position:absolute;font-size:13px;color:var(--muted);font-family:monospace}
+.nav{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:rgba(17,26,41,.85);color:var(--ink);font-size:22px;cursor:pointer;z-index:5;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.nav:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+.nav:disabled{opacity:.25;cursor:default}
+#prev{left:10px} #next{right:10px}
+footer{padding:10px 16px;border-top:1px solid var(--line);display:flex;align-items:center;gap:14px;font-size:13px;color:var(--muted)}
+footer .pageinfo{font-family:monospace;font-weight:600;color:var(--ink)}
+footer .title{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-style:italic}
+footer a{color:var(--mint);text-decoration:none;font-weight:600}
+.hint{font-size:11px;color:var(--muted);text-align:center;padding:0 0 8px}
+@media(max-width:640px){.nav{width:38px;height:38px;font-size:18px}footer .title{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="htop">
+    <span class="name"><span class="dot"></span>Seong-Jun Kang · Publications</span>
+    <a href="CV.html">← Back to CV</a>
+  </div>
+  <div class="tabs" id="tabs"></div>
+</header>
+<main>
+  <button class="nav" id="prev" aria-label="Previous page">‹</button>
+  <div id="stage"><canvas id="cv"></canvas><div id="loading">Loading…</div></div>
+  <button class="nav" id="next" aria-label="Next page">›</button>
+</main>
+<div class="hint">← → arrows · swipe · or tap the side buttons. Tabs switch papers.</div>
+<footer>
+  <span class="pageinfo" id="pageinfo">–</span>
+  <span class="title" id="title"></span>
+  <a id="dl" target="_blank" rel="noopener">⬇ Download PDF</a>
+</footer>
+
+<script type="module">
+import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs';
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs';
+
+const PAPERS = [
+  {f:'2025_JNI_Alzheimer_scRNAseq.pdf',        tab:'JNI · 2025',        title:'J. Neuroimmunology (2025) — CD8⁺ Trm ↔ choroid plexus in Alzheimer’s'},
+  {f:'2025_Allergy_AD_Treg.pdf',               tab:'Allergy · 2025',    title:'Allergy (2025) — Dysfunctional Tregs in atopic dermatitis'},
+  {f:'2024_eBioMedicine_psoriasis_Treg.pdf',   tab:'eBioMedicine · 2024',title:'eBioMedicine (2024) — Treg profiling in psoriasis'},
+  {f:'2024_Xenotransplantation_tofacitinib.pdf',tab:'Xeno · 2024',      title:'Xenotransplantation (2024) — Tofacitinib regimen, allo-islet Tx'},
+  {f:'2024_JEADV_melanoma_immune.pdf',         tab:'JEADV · 2024',      title:'JEADV (2024) — Tumour–immune spatial transcriptomics, melanoma'},
+  {f:'2022_JEADV_melanoma_spatial.pdf',        tab:'JEADV · 2022',      title:'JEADV (2022) — Intra-tumoral heterogeneity, melanoma'},
+  {f:'2021_CurrDiabRep_xeno_review.pdf',       tab:'Curr Diab Rep · 2021',title:'Current Diabetes Reports (2021) — Islet xenotransplantation review'},
+  {f:'2019_Islets_JAK3_isletTx.pdf',           tab:'Islets · 2019',     title:'Islets (2019) — JAK3 inhibitor immunosuppression, islet Tx'},
+];
+const BLOB = 'https://github.com/AwesomeJun/Seong-Jun-CV/blob/main/papers/';
+
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+const stage = document.getElementById('stage'), loading = document.getElementById('loading');
+const tabsEl = document.getElementById('tabs'), pageinfo = document.getElementById('pageinfo');
+const titleEl = document.getElementById('title'), dl = document.getElementById('dl');
+const prevBtn = document.getElementById('prev'), nextBtn = document.getElementById('next');
+
+let docIdx = 0, pageNum = 1, pdfDoc = null, numPages = 0, busy = false, token = 0;
+
+// build tabs
+PAPERS.forEach((p, i) => {
+  const b = document.createElement('button');
+  b.className = 'tab' + (i === 0 ? ' on' : '');
+  b.textContent = p.tab;
+  b.onclick = () => loadDoc(i);
+  tabsEl.appendChild(b);
+});
+
+async function loadDoc(i){
+  docIdx = i; pageNum = 1;
+  [...tabsEl.children].forEach((t, k) => t.classList.toggle('on', k === i));
+  titleEl.textContent = PAPERS[i].title;
+  dl.href = BLOB + PAPERS[i].f;
+  loading.style.display = 'block'; loading.textContent = 'Loading…';
+  const myToken = ++token;
+  try{
+    pdfDoc = await pdfjsLib.getDocument('papers/' + PAPERS[i].f).promise;
+    if(myToken !== token) return;
+    numPages = pdfDoc.numPages;
+    await renderPage(1);
+  }catch(e){
+    loading.textContent = 'Could not load PDF. Use Download instead.';
+  }
+}
+
+async function renderPage(n){
+  if(!pdfDoc || busy) return;
+  busy = true;
+  pageNum = Math.max(1, Math.min(numPages, n));
+  const myToken = token;
+  const page = await pdfDoc.getPage(pageNum);
+  if(myToken !== token){ busy = false; return; }
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const v1 = page.getViewport({scale: 1});
+  const availW = stage.clientWidth - 8, availH = stage.clientHeight - 8;
+  const scale = Math.min(availW / v1.width, availH / v1.height);
+  const vp = page.getViewport({scale: scale * dpr});
+  cv.width = vp.width; cv.height = vp.height;
+  cv.style.width = (vp.width / dpr) + 'px';
+  cv.style.height = (vp.height / dpr) + 'px';
+  await page.render({canvasContext: ctx, viewport: vp}).promise;
+  loading.style.display = 'none';
+  pageinfo.textContent = `${pageNum} / ${numPages}`;
+  prevBtn.disabled = pageNum <= 1;
+  nextBtn.disabled = pageNum >= numPages;
+  busy = false;
+}
+
+const go = d => renderPage(pageNum + d);
+prevBtn.onclick = () => go(-1);
+nextBtn.onclick = () => go(1);
+window.addEventListener('keydown', e => {
+  if(e.key === 'ArrowLeft') go(-1);
+  else if(e.key === 'ArrowRight') go(1);
+});
+// touch swipe
+let tx = 0, ty = 0;
+stage.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, {passive:true});
+stage.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+  if(Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
+}, {passive:true});
+// re-render on resize
+let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => renderPage(pageNum), 150); });
+
+loadDoc(0);
+</script>
+</body>
+</html>
