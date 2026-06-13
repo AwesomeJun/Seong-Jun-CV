@@ -1,9 +1,9 @@
 # Seong-Jun Kang, Ph.D.
 
-Computational single-cell scientist — single-cell & spatial multi-omics, ML/DL pipelines.
+Computational single-cell scientist — single-cell & spatial multi-omics, ML/DL analysis.
 📍 Boston, MA  ·  ✉️ sjkang89@gmail.com
 
-### 📄 [View CV (web)](https://awesomejun.github.io/Seong-Jun-CV/CV.html)
+### 📄 [View CV (web)](https://awesomejun.github.io/Seong-Jun-CV/)
 
 ---
 
@@ -70,7 +70,7 @@ JAK3 inhibitor-based immunosuppression in allogeneic islet transplantation<br>
 </tr>
 </table>
 
-*First (co-first) = equal contribution (shared first authorship). The full publication list, including a co-first paper under review at* Nature Immunology, *is in the [CV](https://awesomejun.github.io/Seong-Jun-CV/CV.html).*
+*First (co-first) = equal contribution (shared first authorship). The full publication list, including a co-first paper under review at* Nature Immunology, *is in the [CV](https://awesomejun.github.io/Seong-Jun-CV/).*
 
 ---
 
