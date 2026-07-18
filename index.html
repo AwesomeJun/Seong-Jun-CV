@@ -24,6 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="chat/ksj-chat.css">
 <style>
 /* CV_brainfish v7 — v3 clean ledger + v6 detailed year-column pubs · BLUE accent (name highlight = yellow, journal = green) */
 :root{
@@ -35,8 +36,47 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 body{font-family:var(--font);color:var(--ink);background:#eef1f4;font-size:13px;line-height:1.46;font-weight:500}
-.page{max-width:860px;margin:22px auto;background:var(--paper);padding:40px 46px 40px}
+.page{max-width:860px;background:var(--paper);padding:40px 46px 40px}
 a{color:var(--cobalt);text-decoration:none}
+
+/* ---------- two-column shell: CV left, chat right ---------- */
+/* The CV keeps its 860px measure. The chat takes a fixed 390px beside it and sticks to
+   the viewport, because the CV is several screens long and a chat that scrolls away at
+   the Education section is a chat nobody uses. */
+.shell{display:grid;grid-template-columns:minmax(0,860px) 390px;gap:22px;
+       max-width:1294px;margin:22px auto;align-items:start;padding:0 12px}
+/* A hidden aside is out of the layout, but its grid column is not. Without this the CV
+   sits 195px left of centre beside an empty gap whenever the chat is off. */
+.shell:has(> .askpane[hidden]){grid-template-columns:minmax(0,860px);
+                               justify-content:center;max-width:884px}
+.cvpane{min-width:0}
+.askpane{position:sticky;top:22px;background:var(--paper);border-radius:14px;
+         padding:18px 18px 16px;box-shadow:0 1px 3px rgba(15,17,21,.07)}
+.askpane .ksj-chat{
+  --ksj-accent:var(--blue); --ksj-accent-2:#27496b; --ksj-accent-fg:#fff;
+  --ksj-accent-bg:rgba(52,97,140,.10);
+  --ksj-ink:var(--ink); --ksj-ink-2:var(--graphite); --ksj-muted:var(--iron);
+  --ksj-line:var(--line); --ksj-line-2:var(--line-soft);
+  --ksj-surface:var(--paper);
+  /* The composer's fill. The pane is white, so this grey is what tells the composer
+     apart from the outlined suggestion pills sitting under it. */
+  --ksj-surface-2:#eef1f5;
+  --ksj-font:var(--font);
+  --ksj-log-max:calc(100vh - 330px);
+}
+.askpane .ksj-title{font-size:15px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;
+                    color:var(--carbon);display:flex;align-items:center;gap:8px}
+.askpane .ksj-title::before{content:"";width:11px;height:11px;background:var(--blue);
+                            border:1.5px solid var(--carbon);border-radius:3px;flex-shrink:0}
+.askpane .ksj-intro{font-size:11px;line-height:1.45}
+
+/* Below the point where 860 + 390 stops fitting, the CV goes full width and the chat
+   moves under it. It stops being sticky there: a sticky panel on a phone eats the screen. */
+@media (max-width:1290px){
+  .shell{grid-template-columns:minmax(0,860px);justify-content:center;max-width:884px}
+  .askpane{position:static;max-width:860px}
+  .askpane .ksj-chat{--ksj-log-max:26rem}
+}
 b,strong{font-weight:700;color:var(--carbon)}
 i,em{font-style:italic}
 
@@ -150,6 +190,9 @@ ol.pubs li.pri::after{content:"";position:absolute;left:24px;top:8px;bottom:8px;
 @media print{
   @page{size:Letter;margin:12mm 13mm}
   body{background:#fff;font-size:10.6px}
+  /* This page's real job is still the PDF. The chat leaves no trace on paper. */
+  .askpane{display:none}
+  .shell{display:block;max-width:none;margin:0;padding:0;gap:0}
   .page{margin:0;max-width:none;padding:0;box-shadow:none}
   .sec{margin-top:13px}
   .sechdr,.row,.skillrow,ol.pubs li,.refblk{break-inside:avoid}
@@ -159,6 +202,8 @@ ol.pubs li.pri::after{content:"";position:absolute;left:24px;top:8px;bottom:8px;
 </style>
 </head>
 <body>
+<div class="shell">
+<div class="cvpane">
 <div class="page">
 
   <!-- ============ HEADER ============ -->
@@ -352,5 +397,47 @@ ol.pubs li.pri::after{content:"";position:absolute;left:24px;top:8px;bottom:8px;
 
   <div class="foot"><span>Seong-Jun Kang · Curriculum Vitae</span><span>Updated June 2026</span></div>
 </div>
+</div>
+
+  <!-- ============ ASK (chat) ============ -->
+  <aside class="askpane" id="askpane" hidden>
+    <div id="cv-chat"></div>
+  </aside>
+
+</div>
+
+<script src="chat/ksj-chat.js"></script>
+<script>
+/* Point this at the chat backend once it is running. While it is an empty string the
+   panel stays hidden, so this file is safe to publish before the server exists. */
+var CHAT_API = "https://seong-jun-kang.web.app";
+
+(function () {
+  if (!CHAT_API) return;
+  var pane = document.getElementById('askpane');
+  pane.hidden = false;
+  KSJChat.mount('#cv-chat', {
+    apiBase: CHAT_API,
+    /* Copy tracks content/site.yaml in the KSJ-portfolio-fable repo, which is where the
+       chatbot and its corpus live. The disclaimer and the placeholder are shortened
+       against that source, because this panel is 390px wide and the full sentences wrap
+       to four lines and two lines. Everything else is word for word. */
+    title: 'Ask about this CV',
+    intro: 'This answers from my publications, research notes, and CV, and cites what it used.',
+    placeholder: 'Ask about a paper, a method, or a grant',
+    hint: 'Enter to send',
+    disclaimer: 'Generated by a language model. Check what matters against the cited source.',
+    /* Aimed at the reader who decides whether to read the CV: a computational PI. Each
+       was run against the corpus first, because a suggestion the corpus cannot answer
+       makes a refusal the first thing a visitor sees. */
+    suggestions: [
+      'What has he built from scratch rather than run as an off-the-shelf tool?',
+      'How does he infer cell identity when the data is incomplete or truncated?',
+      'What machine learning has he validated, and how?',
+      'How does his wet-lab experience change the way he analyses data?'
+    ]
+  });
+})();
+</script>
 </body>
 </html>
