@@ -239,6 +239,11 @@
     // always ended, the textarea holds the committed text, and the two cases collapse
     // into one. keydown still runs, only to stop the browser inserting a newline.
     this.input.addEventListener('compositionend', function () {
+      // Arriving inside the guard window means this composition committed into a box that
+      // was already sent and cleared. Its text is the tail of the message, not a new one.
+      if (self.clearingUntil && Date.now() < self.clearingUntil) {
+        self.input.value = '';
+      }
       self.autosize();
       self.syncSend();
     });
@@ -454,15 +459,36 @@
     });
   };
 
+  // Emptying the box is not one assignment, because an IME can still be holding the last
+  // character when we do it. Browsers disagree on whether compositionend lands before or
+  // after the keyup that sent the message, and on the late ordering the IME commits into
+  // the box we just cleared, leaving "녕" behind after "안녕" was sent.
+  //
+  // So: clear, and keep clearing for a moment. The second pass is on the next frame,
+  // which is after any pending compositionend has run, and a compositionend arriving
+  // inside the guard window clears itself. Cheap, and it does not depend on event order.
+  Chat.prototype.clearInput = function () {
+    var self = this;
+    this.clearingUntil = Date.now() + 250;
+    this.input.value = '';
+    this.autosize();
+    this.syncSend();
+    requestAnimationFrame(function () {
+      if (self.input.value) {
+        self.input.value = '';
+        self.autosize();
+        self.syncSend();
+      }
+    });
+  };
+
   /* --------------------------------------------------------------- stream */
   Chat.prototype.ask = async function (question) {
     if (this.busy || !question || !question.trim()) return;
     question = question.trim();
 
     this.busy = true;
-    this.input.value = '';
-    this.autosize();
-    this.syncSend();
+    this.clearInput();
 
     // The transcript only exists once there is something in it.
     this.log.hidden = false;
