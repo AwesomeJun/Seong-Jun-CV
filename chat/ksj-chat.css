@@ -406,3 +406,72 @@
   font-size: .72rem;
   color: var(--ksj-muted);
 }
+
+/* ---------------------------------------------------------------- figures */
+/* Figures attached to the sources an answer cited. Sized so two sit side by side on a
+   desktop and one fills the width on a phone. Height is capped rather than fixed: a
+   panel figure and a tall schematic both have to look deliberate in the same row. */
+.ksj-figs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+  gap: .6rem;
+  margin: .9rem 0 0;
+}
+.ksj-fig {
+  margin: 0;
+  border: 1px solid var(--ksj-line, #dfe2e8);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--ksj-raised, #fff);
+  /* Caption sits at the bottom of every card, so a one-line and a two-line caption still
+     leave the images aligned across the row. */
+  display: flex;
+  flex-direction: column;
+}
+.ksj-fig figcaption { margin-top: auto; }
+.ksj-fig img {
+  display: block;
+  width: 100%;
+  /* Journal figures arrive at wildly different aspect ratios: a wide NMF heatmap next to
+     a near-square scatter. A fixed height leaves one of them floating in dead space, so
+     the height follows the image and only very tall figures get cropped to keep the row
+     from running away. */
+  max-height: 15rem;
+  object-fit: cover;
+  object-position: top;
+  background: var(--ksj-sunk, #f4f5f7);
+  cursor: zoom-in;
+}
+.ksj-fig figcaption {
+  font-size: .72rem;
+  line-height: 1.45;
+  color: var(--ksj-muted, #6b7280);
+  padding: .4rem .55rem;
+  border-top: 1px solid var(--ksj-line, #dfe2e8);
+}
+
+/* Click to enlarge. The dialog is plain CSS so the widget keeps its no-dependency rule. */
+.ksj-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: grid;
+  place-items: center;
+  padding: 2rem 1rem;
+  background: rgba(10, 12, 16, .82);
+  cursor: zoom-out;
+}
+.ksj-lightbox img {
+  max-width: min(64rem, 100%);
+  max-height: 88vh;
+  object-fit: contain;
+  border-radius: 6px;
+  background: #fff;
+}
+.ksj-lightbox figcaption {
+  color: #e8eaee;
+  font-size: .8rem;
+  text-align: center;
+  margin-top: .7rem;
+  max-width: 44rem;
+}

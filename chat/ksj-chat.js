@@ -36,7 +36,11 @@
 
   function safeUrl(url) {
     var u = String(url).trim();
-    if (/^(https?:\/\/|mailto:|#)/i.test(u)) return escapeHtml(u);
+    // Root-relative paths are allowed because figure URLs arrive as /assets/figures/x.jpg
+    // and stay relative when the widget is served from the same origin as the API.
+    // Protocol-relative (//evil.com) is excluded on purpose: it reads as a path and is not.
+    if (/^\/\//.test(u)) return '#';
+    if (/^(https?:\/\/|mailto:|#|\/)/i.test(u)) return escapeHtml(u);
     return '#';
   }
 
@@ -200,6 +204,8 @@
     this.chips = root.querySelector('.ksj-chips');
 
     this.bind();
+    // Delegated on the log, so it keeps working for answers painted later.
+    this.bindLightbox(this.log);
     this.renderChips();
   }
 
@@ -216,12 +222,37 @@
       self.syncSend();
     });
 
+    // Korean, Japanese, and Chinese input goes through an IME, which holds the last
+    // character in a composing state until it is committed. The Enter that commits it
+    // also reaches keydown, so without this guard "안녕" sends and then the IME commits
+    // "녕" into the freshly cleared box, leaving a stray character behind every time.
+    //
+    // Two signals, because they cover different browsers: `isComposing` is the standard
+    // one, and keyCode 229 is what Safari and older WebKit report while an IME is active.
+    // Korean, Japanese, and Chinese go through an IME that holds the last character in a
+    // composing state. The Enter that commits it also reaches keydown, and browsers do
+    // not agree on the order: some fire compositionend first, some report isComposing
+    // true on that very keydown. Handling only one of those cases breaks the other, so
+    // both are covered.
+    //
+    // keyup rather than keydown is what makes this work. By keyup the composition has
+    // always ended, the textarea holds the committed text, and the two cases collapse
+    // into one. keydown still runs, only to stop the browser inserting a newline.
+    this.input.addEventListener('compositionend', function () {
+      self.autosize();
+      self.syncSend();
+    });
+
     this.input.addEventListener('keydown', function (e) {
-      // Enter sends. Shift+Enter is a newline, which is what a long question needs.
       if (e.key === 'Enter' && !e.shiftKey) {
+        // Swallow the newline here; sending happens on keyup, once the IME has committed.
         e.preventDefault();
-        self.ask(self.input.value);
       }
+    });
+
+    this.input.addEventListener('keyup', function (e) {
+      if (e.key !== 'Enter' || e.shiftKey) return;
+      self.ask(self.input.value);
     });
 
     this.chips.addEventListener('click', function (e) {
@@ -322,6 +353,70 @@
     return /Mac|iP(hone|ad|od)/.test(navigator.platform || '') ? '⌘C' : 'Ctrl+C';
   }
 
+  /* -------------------------------------------------------------- figures */
+  // Figures belonging to the sources an answer cited. The model never writes an image
+  // path and cannot: paths live in retrieval metadata, not in the text the model sees,
+  // so a figure here is always a real file attached to a source that was actually used.
+  //
+  // The widget runs on three origins, so the server sends site-relative URLs and the
+  // apiBase is prepended here. Without that the CV site would look for the figure on its
+  // own domain and get a 404.
+  Chat.prototype.figuresBlock = function (figures) {
+    if (!figures || !figures.length) return '';
+    var base = this.opts.apiBase || '';
+    var items = figures.map(function (f) {
+      var url = /^https?:\/\//i.test(f.url || '') ? f.url : base + (f.url || '');
+      var cap = escapeHtml(f.caption || '');
+      if (f.marker) {
+        cap += ' <a class="ksj-cite" href="#ksj-cite-' + escapeHtml(f.marker) + '">' +
+               escapeHtml(f.marker) + '</a>';
+      }
+      return '<figure class="ksj-fig">' +
+        '<img src="' + safeUrl(url) + '" alt="' + escapeHtml(f.alt || '') + '" loading="lazy">' +
+        '<figcaption>' + cap + '</figcaption></figure>';
+    }).join('');
+    return '<div class="ksj-figs">' + items + '</div>';
+  };
+
+  // Click to enlarge. A panel figure at 13rem is a thumbnail, and the reader who cares
+  // enough to look at a figure wants to actually read the axes.
+  Chat.prototype.bindLightbox = function (root) {
+    var self = this;
+    root.addEventListener('click', function (e) {
+      var img = e.target.closest ? e.target.closest('.ksj-fig img') : null;
+      if (!img) return;
+      var cap = img.parentElement.querySelector('figcaption');
+      var box = document.createElement('div');
+      box.className = 'ksj-lightbox';
+      box.setAttribute('role', 'dialog');
+      box.setAttribute('aria-modal', 'true');
+      box.setAttribute('aria-label', img.alt || 'Figure');
+
+      var big = document.createElement('img');
+      big.src = img.src;
+      big.alt = img.alt;
+      box.appendChild(big);
+
+      if (cap) {
+        var c = document.createElement('figcaption');
+        c.textContent = cap.textContent;
+        box.appendChild(c);
+      }
+
+      function close() {
+        box.remove();
+        document.removeEventListener('keydown', onKey);
+      }
+      function onKey(ev) { if (ev.key === 'Escape') close(); }
+
+      box.addEventListener('click', close);
+      document.addEventListener('keydown', onKey);
+      document.body.appendChild(box);
+      box.focus();
+      self.scroll();
+    });
+  };
+
   /* ------------------------------------------------------------ citations */
   Chat.prototype.sourcesBlock = function (citations) {
     if (!citations || !citations.length) return '';
@@ -387,14 +482,19 @@
 
     var text = '';
     var citations = [];
+    var figures = [];
     var res;
 
     // The answer gets its own wrapper so the caret can hang off the last line of the
     // text. Without it the sources block is the body's last child and the caret ends up
     // stranded underneath it.
+    //
+    // Figures sit between the answer and the sources: they belong to the answer, and a
+    // reader who wants the provenance is already heading down to the source list.
     function paint() {
       body.innerHTML =
         '<div class="ksj-answer">' + self.linkCitations(renderMd(text), citations) + '</div>' +
+        self.figuresBlock(figures) +
         self.sourcesBlock(citations);
       self.scroll();
     }
@@ -445,6 +545,7 @@
           // not a visitor's, and the server already logs a fallback.
           if (ev.type === 'citations') {
             citations = ev.citations || [];
+            figures = ev.figures || [];
           } else if (ev.type === 'text') {
             text += ev.text;
             paint();
