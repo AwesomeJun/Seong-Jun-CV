@@ -66,6 +66,15 @@ a{color:var(--cobalt);text-decoration:none}
 }
 .askpane .ksj-title{font-size:15px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;
                     color:var(--carbon);display:flex;align-items:center;gap:8px}
+.cv-download{
+  display:flex; align-items:center; justify-content:center; gap:.5rem;
+  margin:0 0 .75rem; padding:.6rem 1rem;
+  background:var(--blue); color:#fff; border-radius:8px;
+  font-size:.92rem; font-weight:600; text-decoration:none;
+  transition:background .15s;
+}
+.cv-download:hover{background:var(--ksj-accent-2);}
+.cv-download svg{width:1.05rem; height:1.05rem; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
 .askpane .ksj-title::before{content:"";width:11px;height:11px;background:var(--blue);
                             border:1.5px solid var(--carbon);border-radius:3px;flex-shrink:0}
 .askpane .ksj-intro{font-size:11px;line-height:1.45}
@@ -401,6 +410,10 @@ ol.pubs li.pri::after{content:"";position:absolute;left:24px;top:8px;bottom:8px;
 
   <!-- ============ ASK (chat) ============ -->
   <aside class="askpane" id="askpane" hidden>
+    <a class="cv-download" href="Seong-Jun-Kang-CV-2026-07.pdf" download="Seong-Jun-Kang-CV.pdf">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+      Download CV (PDF)
+    </a>
     <div id="cv-chat"></div>
   </aside>
 
