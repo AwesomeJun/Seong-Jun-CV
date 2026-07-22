@@ -73,7 +73,11 @@ a{color:var(--cobalt);text-decoration:none}
   font-size:.92rem; font-weight:600; text-decoration:none;
   transition:background .15s;
 }
-.cv-download:hover{background:var(--ksj-accent-2);}
+/* A darker shade of the same accent on hover. The earlier version used --ksj-accent-2,
+   which is defined only inside .ksj-chat; this button sits outside it, so the variable
+   resolved to nothing and the background went white. color-mix keeps the hover in the
+   same blue rather than jumping to the brighter --cobalt. */
+.cv-download:hover{background:color-mix(in srgb, var(--blue) 82%, #000);}
 .cv-download svg{width:1.05rem; height:1.05rem; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
 .askpane .ksj-title::before{content:"";width:11px;height:11px;background:var(--blue);
                             border:1.5px solid var(--carbon);border-radius:3px;flex-shrink:0}
