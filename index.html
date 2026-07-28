@@ -215,7 +215,12 @@ ol.pubs li.pri::after{content:"";position:absolute;left:24px;top:8px;bottom:8px;
   .sec{margin-top:13px}
   .sechdr,.row,.skillrow,ol.pubs li,.refblk{break-inside:avoid}
   .name{font-size:27px}
-  .foot{position:fixed;bottom:6mm;left:0;right:0;border:none;padding:0}
+  /* This was position:fixed, which repeats the line on every sheet but pins it inside the
+     page area, so on any full page it printed across the last entry. Pushing it into the
+     page margin does not work either: Chrome clips fixed content at the page edge and the
+     line disappeared from five of six pages. In flow it prints once, at the end, and never
+     lands on anything. */
+  .foot{position:static;margin-top:16px;padding-top:8px;border-top:1px solid var(--line-soft);break-inside:avoid}
 }
 </style>
 </head>

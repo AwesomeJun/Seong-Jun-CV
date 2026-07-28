@@ -1,0 +1,5 @@
+# GitHub Pages publishes every file in this repository, so anything kept here for
+# reference is also a public URL. Version snapshots and superseded PDFs go to
+# ../Seong-Jun-CV-archive/ instead, outside the repository.
+versions/
+_archive/
