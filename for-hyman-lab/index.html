@@ -3,33 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Seong-Jun Kang, Ph.D. · Curriculum Vitae · Keating Lab</title>
+<title>Seong-Jun Kang, Ph.D. · Curriculum Vitae · Hyman Lab</title>
 
 <!-- Favicon: brain emoji as inline SVG (no extra file, works in light/dark) -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%F0%9F%A7%A0</text></svg>">
 
-<!-- Open Graph / link-preview card. This page lives at /keating/, so the URL is the
-     subpage and not the site root. -->
+<!-- Open Graph / link-preview card. -->
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://kangseongjun.com/keating/">
-<meta property="og:title" content="Seong-Jun Kang, Ph.D. · Curriculum Vitae · Keating Lab">
-<meta property="og:description" content="Immunologist working on protein–protein interaction blockade: binding measurement by SPR and ELISA, antibody lead optimization, and single-cell readouts. Postdoctoral Associate applicant, Keating Lab, MIT Department of Biology.">
-<!-- The card image is rendered from THIS page, not from the site root. The root
-     og-image.png is a screenshot of the CV addressed to a different lab, so an unfurl of
-     this URL would have shown that lab's name over this page's title. -->
-<meta property="og:image" content="https://kangseongjun.com/keating/og-image.png">
+<meta property="og:url" content="https://kangseongjun.com/for-hyman-lab/">
+<meta property="og:title" content="Seong-Jun Kang, Ph.D. · Curriculum Vitae · Hyman Lab">
+<meta property="og:description" content="Computational immunologist working in single-cell and spatial multi-omics of the immune system. Research Scientist applicant, Hyman Lab, MassGeneral Institute for Neurodegenerative Disease.">
+<!-- Each page carries its own card image, rendered from itself. One shared image would
+     show one lab's name over every other lab's title. -->
+<meta property="og:image" content="https://kangseongjun.com/for-hyman-lab/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Seong-Jun Kang, Ph.D. · Curriculum Vitae · Keating Lab">
-<meta name="twitter:description" content="Immunologist working on protein–protein interaction blockade: binding measurement by SPR and ELISA, antibody lead optimization, and single-cell readouts. Postdoctoral Associate applicant, Keating Lab, MIT Department of Biology.">
-<meta name="twitter:image" content="https://kangseongjun.com/keating/og-image.png">
+<meta name="twitter:title" content="Seong-Jun Kang, Ph.D. · Curriculum Vitae · Hyman Lab">
+<meta name="twitter:description" content="Computational immunologist working in single-cell and spatial multi-omics of the immune system. Research Scientist applicant, Hyman Lab, MassGeneral Institute for Neurodegenerative Disease.">
+<meta name="twitter:image" content="https://kangseongjun.com/for-hyman-lab/og-image.png">
 <!-- Which source file this deployed copy was cut from. Bump it with every copy. -->
-<meta name="generator" content="index_Keating_v2.0.0.html">
+<meta name="generator" content="Seong-Jun-CV-for-labs/build.py v1.0.0 · blocks/hyman.json">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../chat/ksj-chat.css">
 <style>
 /* CV_brainfish v7 · v3 clean ledger + v6 detailed year-column pubs · BLUE accent (name highlight = yellow, journal = green) */
 :root{
@@ -46,19 +45,41 @@ body{font-family:var(--font);color:var(--ink);background:#eef1f4;font-size:13px;
 .page{max-width:860px;background:var(--paper);padding:40px 46px 40px}
 a{color:var(--cobalt);text-decoration:none}
 
-/* ---------- shell ---------- */
-/* The general CV runs the "Ask about this CV" panel beside the page. This version does
-   not carry it. The panel answers from a corpus that has no record of the SPR and ELISA
-   work this page is built on, so asked about it the widget answers that it cannot find
-   it, and it volunteers a machine-learning claim this project has already ruled out.
-   One column, no chat assets, no answer competing with the page. */
-.shell{max-width:884px;margin:22px auto;padding:0 12px}
+/* ---------- two-column shell: CV left, chat right ---------- */
+/* The CV keeps its 860px measure. The chat takes a fixed 390px beside it and sticks to
+   the viewport, because the CV is several screens long and a chat that scrolls away at
+   the Education section is a chat nobody uses. */
+.shell{display:grid;grid-template-columns:minmax(0,860px) 390px;gap:22px;
+       max-width:1294px;margin:22px auto;align-items:start;padding:0 12px}
+/* A hidden aside is out of the layout, but its grid column is not. Without this the CV
+   sits 195px left of centre beside an empty gap whenever the chat is off. */
+.shell:has(> .askpane[hidden]){grid-template-columns:minmax(0,860px);
+                               justify-content:center;max-width:884px}
 .cvpane{min-width:0}
+.askpane{position:sticky;top:22px;background:var(--paper);border-radius:14px;
+         padding:18px 18px 16px;box-shadow:0 1px 3px rgba(15,17,21,.07)}
+.askpane .ksj-chat{
+  --ksj-accent:var(--blue); --ksj-accent-2:#27496b; --ksj-accent-fg:#fff;
+  --ksj-accent-bg:rgba(52,97,140,.10);
+  --ksj-ink:var(--ink); --ksj-ink-2:var(--graphite); --ksj-muted:var(--iron);
+  --ksj-line:var(--line); --ksj-line-2:var(--line-soft);
+  --ksj-surface:var(--paper);
+  /* The composer's fill. The pane is white, so this grey is what tells the composer
+     apart from the outlined suggestion pills sitting under it. */
+  --ksj-surface-2:#eef1f5;
+  --ksj-font:var(--font);
+  --ksj-log-max:calc(100vh - 330px);
+}
+.askpane .ksj-title{font-size:15px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;
+                    color:var(--carbon);display:flex;align-items:center;gap:8px}
+.askpane .ksj-title::before{content:"";width:11px;height:11px;background:var(--blue);
+                            border:1.5px solid var(--carbon);border-radius:3px;flex-shrink:0}
+.askpane .ksj-intro{font-size:11px;line-height:1.45}
 .cv-download{
-  display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
-  margin:13px 0 0; padding:.55rem 1rem;
+  display:flex; align-items:center; justify-content:center; gap:.5rem;
+  margin:0 0 .75rem; padding:.6rem 1rem;
   background:var(--blue); color:#fff; border-radius:8px;
-  font-size:.86rem; font-weight:600; text-decoration:none;
+  font-size:.92rem; font-weight:600; text-decoration:none;
   transition:background .15s;
 }
 /* A darker shade of the same accent on hover. color-mix keeps the hover in the same blue
@@ -66,7 +87,22 @@ a{color:var(--cobalt);text-decoration:none}
 .cv-download:hover{background:color-mix(in srgb, var(--blue) 82%, #000);}
 .cv-download:focus-visible{outline:2.5px solid var(--cobalt);outline-offset:2px}
 .cv-download svg{width:1.05rem; height:1.05rem; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+/* The other pages of this CV. A reader who lands on one lab's page has no way to the
+   others otherwise. Each page hides its own entry. */
+.cv-others{margin:0 0 .75rem;font-size:10.5px;line-height:1.5;color:var(--iron);font-weight:600}
+.cv-others b{display:block;font-size:9.5px;letter-spacing:.4px;text-transform:uppercase;
+             color:var(--slate);margin-bottom:2px;font-weight:800}
+.cv-others a{color:var(--cobalt)}
+.cv-others a:hover{text-decoration:underline}
+.cv-others a:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px}
 
+/* Below the point where 860 + 390 stops fitting, the CV goes full width and the chat
+   moves under it. It stops being sticky there: a sticky panel on a phone eats the screen. */
+@media (max-width:1290px){
+  .shell{grid-template-columns:minmax(0,860px);justify-content:center;max-width:884px}
+  .askpane{position:static;max-width:860px}
+  .askpane .ksj-chat{--ksj-log-max:26rem}
+}
 b,strong{font-weight:700;color:var(--carbon)}
 i,em{font-style:italic}
 
@@ -189,9 +225,9 @@ ol.pubs li.pri::after{content:"";position:absolute;left:24px;top:8px;bottom:8px;
 @media print{
   @page{size:Letter;margin:12mm 13mm}
   body{background:#fff;font-size:10.6px}
-  /* This page's real job is still the PDF. The download button leaves no trace on paper. */
-  .cv-download{display:none}
-  .shell{display:block;max-width:none;margin:0;padding:0}
+  /* This page's real job is still the PDF. The chat leaves no trace on paper. */
+  .askpane{display:none}
+  .shell{display:block;max-width:none;margin:0;padding:0;gap:0}
   .page{margin:0;max-width:none;padding:0;box-shadow:none}
   .sec{margin-top:13px}
   .sechdr,.row,.skillrow,ol.pubs li,.refblk{break-inside:avoid}
@@ -219,8 +255,8 @@ ol.pubs li.pri::after{content:"";position:absolute;left:24px;top:8px;bottom:8px;
       <div class="hleft">
         <h1 class="name">Seong-Jun <span class="accent">Kang</span>, Ph.D.</h1>
         <div class="titles">
-          <div class="t-em">Immunologist working on protein–protein interaction blockade: binding measurement, antibody lead optimization, and single-cell readouts of what a candidate did</div>
-          <div>Postdoctoral Associate applicant · Keating Lab, MIT Department of Biology (Job Number 25959)</div>
+          <div class="t-em">Computational immunologist working in single-cell and spatial multi-omics of the immune system</div>
+          <div>Research Scientist applicant · Hyman Lab, MassGeneral Institute for Neurodegenerative Disease · transcriptomics and neurodegeneration</div>
         </div>
       </div>
       <div class="hright">
@@ -228,25 +264,21 @@ ol.pubs li.pri::after{content:"";position:absolute;left:24px;top:8px;bottom:8px;
       </div>
     </div>
     <div class="summary3">
-      <div class="col"><span class="slab">Professional status</span>At PB Immune Therapeutics I ran the binding measurements for an anti-CD40 antibody program, and those numbers decided which candidate went into the animal studies. I was the manager and then the associate director on that program.</div>
-      <div class="col"><span class="slab">Research objective</span>to measure how tightly and how selectively a designed molecule binds its target, and to check that the number still holds when the assay, the species, or the batch changes.</div>
-      <div class="col"><span class="slab">Scientific interests</span>protein–protein interaction blockade; affinity ranking and binding kinetics by SPR; epitope and competition analysis by ELISA; species cross-reactivity; antibody lead selection and optimization; cell-resolved readouts of what a candidate changed.</div>
+      <div class="col"><span class="slab">Professional status</span>I'm an immunologist working in computational single-cell analysis. I read immune cell state from large, incomplete single-cell and spatial data, and I check that it holds on held-out data. The brain work I have done is single-cell immune profiling in an Alzheimer's mouse model, where I built the path from tissue harvest through 10x to the analysis.</div>
+      <div class="col"><span class="slab">Research objective</span>to add an immune-cell layer to the transcriptomic dissection of the human Alzheimer's brain, and to separate immune programs that drive neurodegeneration from those that only track it. I write my own funding: lead proposal writer on ~$1.3M of funded industry grants and a &gt;30% contributor to the ~$1.6M SCAID atlas proposal.</div>
+      <div class="col"><span class="slab">Scientific interests</span>single-cell and spatial multi-omics; immune cell-state inference from incomplete data; consensus NMF and isoform-resolved analysis; neuro-immune interactions in neurodegeneration; atlas-scale QC across many donors and sites; calibrated, held-out-validated ML.</div>
     </div>
-    <a class="cv-download" href="Seong-Jun-Kang-CV-Keating.pdf" download="Seong-Jun-Kang-CV-Keating.pdf">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
-      Download CV (PDF)
-    </a>
   </header>
 
   <!-- ============ WHAT I WOULD BRING ============ -->
   <section class="sec">
     <div class="sechdr"><h2>What I Would Bring</h2><div class="rule"></div></div>
     <ul class="interest">
-      <li><b>Binding measurement.</b> I ran surface plasmon resonance on a Biacore instrument for an anti-CD40 antibody program. I used it to rank candidates by affinity, to confirm that the lead blocked the receptor, and to compare binding against human and non-human-primate antigen before the primate studies were designed. ELISA-based affinity and epitope work ran alongside it.</li>
-      <li><b>Running a lead-optimization program.</b> I was the manager and then the associate director on that program, from the candidate panel to a registered patent in 2024, on which I am a co-inventor. It had defined targets, funder milestones, and a delivery date.</li>
-      <li><b>CROs and core facilities.</b> I designed and placed external work, set the assay conditions, took delivery of the data, and made the call on what advanced. Non-human-primate studies in three species ran this way. I also ran multi-site sample QC and multi-PI coordination for a 700-donor atlas.</li>
-      <li><b>Protein–protein interaction blockade as the problem.</b> The anti-CD40 program was a CD40–CD40L blockade program. I also worked on a CABIN1-derived core peptide that inhibits calcineurin-mediated T-cell activation, where my part was the T-cell functional validation.</li>
-      <li><b>Reading out what a molecule did.</b> High-parameter flow cytometry, single-cell and spatial transcriptomics, and targeted plasma proteomics, used to show that a candidate changed what cells do.</li>
+      <li><b>Brain immune single-cell analysis.</b> In the 5xFAD Alzheimer's mouse model I built the analysis path from end to end, running whole-brain harvest, enzymatic digestion, Percoll enrichment, and FACS into 10x and then the analysis. It resolved ten immune populations from 11,587 cells and showed exhausted CD8 tissue-resident memory T cells engaging the choroid plexus epithelium at the blood-CSF barrier, while that epithelium turned on MHC class I, interferon-stimulated genes, and JAK-STAT signaling (Journal of Neuroimmunology 2025, first author).</li>
+      <li><b>Cell-state calling and held-out testing.</b> From 251,055 memory CD4 T cells with paired T-cell receptors I used consensus NMF to find twelve reproducible gene programs. Five-prime single-cell reads cannot separate the short and long PDE4D isoforms, so I wrote a UMI-aware pipeline that goes back to the aligned reads and assigns the isoform per cell. The short-isoform state recurs across 702 samples and 23 conditions in the SCAID atlas, and a classifier on subset composition reaches a held-out AUC of 0.78. The integration, the NMF, the isoform pipeline, and the classifier are my work, and colleagues carried out the wet validation (co-first author, in revision at Nature Immunology).</li>
+      <li><b>Methods that transfer.</b> Olink targeted plasma proteomics, GeoMx region-of-interest microdissection and profiling, and high-parameter flow panels are assays I have run, and I designed the causal overexpression test in the PDE4D study. I ran them on immune cells and tumor tissue, and I have not worked with human brain tissue. What transfers is the method rather than the biology, and the biology is what I would be learning from the people who already do it.</li>
+      <li><b>A first six months.</b> In the first three months I would take one human brain single-nucleus dataset the group already has and annotate the immune and perivascular compartment, writing the marker logic down and reporting uncertainty per call, with no new wet work. In the next three months I would test the calls on held-out donors, run consensus NMF for the programs, and check whether program scores track pathology stage rather than tissue batch or postmortem interval. The go/no-go at six months is whether the calls recover states already known from sorted-cell references and whether they hold out of sample.</li>
+      <li><b>Grants written.</b> In industry I was the lead proposal writer on two Korea Drug Development Fund awards for an anti-CD40 antibody (about $571,000 and $321,000) and on two Ministry of SMEs and Startups awards, and I did the proposal and study design for a NAVER-funded engineered Treg program. Those come to about $1.3 million of funded work. During my doctorate I wrote more than 30 percent of the proposal for SCAID, the Korean single-cell atlas of immune disease, funded at about $1.6 million, and I then ran its multi-site QC, milestone tracking and multi-PI coordination. All of these were held by the institutional principal investigator, so my role was proposal writing and project execution, not as PI.</li>
     </ul>
   </section>
 
@@ -272,8 +304,8 @@ ol.pubs li.pri::after{content:"";position:absolute;left:24px;top:8px;bottom:8px;
   <section class="sec">
     <div class="sechdr"><h2>Research &amp; Professional Experience</h2><div class="rule"></div></div>
     <div class="row">
-      <div class="lab"><span class="role">Researcher<br>(postdoctoral)</span><span class="dt">2025–2026</span></div>
-      <div class="main"><span class="org">Yonsei University Wonju College of Medicine</span> · Dept. of Physiology / Organelle Medicine Research Center, <span class="loc">Wonju, Republic of Korea</span><br><span class="det">Developed deep-learning multimodal-integration models fusing imaging, transcriptomic, and clinical data into single predictive models.</span></div>
+      <div class="lab"><span class="role">Researcher<br>(postdoctoral)</span><span class="dt">2025–present</span></div>
+      <div class="main"><span class="org">Yonsei University Wonju College of Medicine</span> · Dept. of Physiology / Organelle Medicine Research Center, <span class="loc">Wonju, Republic of Korea</span><br><span class="det">Deep-learning multimodal-integration models fusing imaging, transcriptomic, and clinical data into single predictive models.</span></div>
     </div>
     <div class="row">
       <div class="lab"><span class="role">Associate Director</span><span class="dt">2023–2025</span></div>
@@ -302,6 +334,14 @@ ol.pubs li.pri::after{content:"";position:absolute;left:24px;top:8px;bottom:8px;
        biophysical assays and CRO work first and for the publication record after. -->
   <section class="sec">
     <div class="sechdr"><h2>Technical Skills</h2><div class="rule"></div></div>
+    <div class="skillrow">
+      <div class="lab">Brain and CNS<br>tissue</div>
+      <div class="items">Mouse brain immune profiling run end to end: whole-brain harvest, enzymatic digestion, Percoll enrichment, CD45⁺ FACS, 10x library generation, and the analysis (<i>J Neuroimmunol</i> 2025, first author; 5xFAD model, 11,587 cells, 10 immune populations). Neuro-immune analysis of choroid plexus epithelium and infiltrating CD8⁺ resident-memory T cells at the blood–CSF barrier. Non-human-primate CNS tissue, brain and spinal cord, across rhesus, cynomolgus and marmoset studies, including EAE models of multiple sclerosis.</div>
+    </div>
+    <div class="skillrow">
+      <div class="lab">Cell-state calling<br>and its checks</div>
+      <div class="items"><b>Consensus NMF</b> gene programs (k = 14 → 12 reproducible programs across 251,055 memory CD4⁺ T cells). Custom UMI-aware, BAM-level isoform code (Python) resolving PDE4D short- versus long-isoform identity from 5′ reads, which a count matrix cannot separate. <b>Milo</b> KNN-graph differential abundance; <b>scVI/scANVI</b> integration; condition classifiers reported with held-out AUC and confidence intervals. Multi-site sample QC, milestone tracking and multi-PI coordination across a 700-donor, 8-organ atlas (SCAID).</div>
+    </div>
     <div class="skillrow">
       <div class="lab">Binding &amp; protein<br>interaction</div>
       <div class="items"><b>Surface plasmon resonance (Biacore)</b> run hands-on for antibody lead work: association and dissociation rates, affinity ranking across a candidate panel, receptor-blocking confirmation, and human / non-human-primate cross-reactivity. <b>ELISA</b>-based affinity and epitope analysis; competition binding. Antibody lead selection and optimization from candidate panel to registered patent. Functional validation of a peptide inhibitor of calcineurin in primary human T cells (CABIN1 core peptide, <i>Exp Mol Med</i> 2022).</div>
@@ -393,11 +433,12 @@ ol.pubs li.pri::after{content:"";position:absolute;left:24px;top:8px;bottom:8px;
   <section class="sec">
     <div class="sechdr"><h2>Research Interests</h2><div class="rule"></div></div>
     <ul class="interest">
-      <li><b>Measuring protein–protein interactions well enough to decide with.</b> Affinity and kinetics that hold across instruments, batches, and species, and assay panels built so that candidates can be compared week to week.</li>
-      <li><b>Blocking an interaction and showing that it was blocked.</b> Receptor-blocking and competition assays read out against what the cells then do.</li>
-      <li><b>Taking a molecule from a candidate panel to a decision.</b> Lead selection and optimization on a fixed timeline, with external work placed at CROs and core facilities.</li>
-      <li><b>Cell-resolved readouts of an intervention.</b> Single-cell transcriptomics, high-parameter flow cytometry, and targeted proteomics used to check what a candidate changed in a tissue.</li>
-      <li><b>Keeping donor, batch, and run structure separate from biology.</b> Study design, pooling and demultiplexing, and models checked on data they were not fitted on.</li>
+      <li><b>Reading immune cell state from incomplete single-cell data.</b> Cell-state calling under ambiguity, isoform and transcript resolution from short reads, and embedding representations of cells, with calibrated confidence.</li>
+      <li><b>Multi-modal integration of molecular identity.</b> Transcriptome, chromatin, spatial, and proteome into cell-state-resolved models.</li>
+      <li><b>Neuro-immune interactions in neurodegeneration.</b> T cells, microglia, and the blood-CSF barrier in Alzheimer's and related disease; ligand-receptor cross-talk and clonal/repertoire structure.</li>
+      <li><b>Building and checking computational analysis paths.</b> Custom callers, reproducible end-to-end analysis code, and comparison against domain ground truth.</li>
+      <li><b>Atlas-scale single-cell analysis across diseases and species.</b> Large multi-donor atlases (SCAID), cross-disease meta-analysis, and non-human-primate-to-human translation.</li>
+
     </ul>
   </section>
 
@@ -425,22 +466,66 @@ ol.pubs li.pri::after{content:"";position:absolute;left:24px;top:8px;bottom:8px;
   <section class="sec">
     <div class="sechdr"><h2>References</h2><div class="rule"></div></div>
     <div class="refgrid">
-      <div class="refblk"><div class="rn">Chung-Gyu Park, M.D., Ph.D.</div><div class="rr">Professor, Microbiology &amp; Immunology / Biomedical Sciences, SNU College of Medicine; CEO/CSO, PB Immune Therapeutics</div><div class="rnote">Doctoral advisor and industry supervisor; directed the anti-CD40 antibody program.</div></div>
-      <div class="refblk"><div class="rn">Hyun Je Kim, M.D., Ph.D.</div><div class="rr">Assistant Professor, Microbiology &amp; Immunology / Biomedical Sciences; Interdisciplinary Program in Artificial Intelligence (IPAI), SNU</div><div class="rnote">Co-corresponding on the single-cell studies; supervised the computational work.</div></div>
-      <div class="refblk"><div class="rn">Seung-Kuy Cha, Ph.D.</div><div class="rr">Professor, Dept. of Physiology &amp; Global Medical Science, Yonsei University Wonju College of Medicine</div><div class="rnote">Most recent research supervisor (2025–2026).</div></div>
-      <div class="refblk"><div class="rn">Jeong Seok Lee, M.D., Ph.D.</div><div class="rr">Associate Professor, Graduate School of Medical Science &amp; Engineering, KAIST, Daejeon</div><div class="rnote">Corresponding author, PDE4D / Nature Immunology study.</div></div>
+      <div class="refblk"><div class="rn">Chung-Gyu Park, M.D., Ph.D.</div><div class="rr">Professor, Microbiology &amp; Immunology / Biomedical Sciences, SNU College of Medicine; CEO/CSO, PB Immune Therapeutics · chgpark@snu.ac.kr</div><div class="rnote">Doctoral advisor and industry supervisor; directed the anti-CD40 antibody program.</div></div>
+      <div class="refblk"><div class="rn">Hyun Je Kim, M.D., Ph.D.</div><div class="rr">Assistant Professor, Microbiology &amp; Immunology / Biomedical Sciences; Interdisciplinary Program in Artificial Intelligence (IPAI), SNU · tte9801@snu.ac.kr</div><div class="rnote">Co-corresponding on the single-cell studies; supervised the computational work.</div></div>
+      <div class="refblk"><div class="rn">Seung-Kuy Cha, Ph.D.</div><div class="rr">Professor, Dept. of Physiology &amp; Global Medical Science, Yonsei University Wonju College of Medicine · skcha@yonsei.ac.kr</div><div class="rnote">Most recent research supervisor (2025–2026).</div></div>
+      <div class="refblk"><div class="rn">Jeong Seok Lee, M.D., Ph.D.</div><div class="rr">Associate Professor, Graduate School of Medical Science &amp; Engineering, KAIST, Daejeon · chemami@kaist.ac.kr</div><div class="rnote">Corresponding author, PDE4D / Nature Immunology study.</div></div>
     </div>
-    <!-- Addresses are not printed here. None of these people has been asked yet, the
-         posting wants the reference list inside the cover letter, and this page is open
-         to anyone. -->
-    <div class="inline" style="margin-top:6px;color:var(--iron);font-size:11px">Contact details on request. Three references are named in the cover letter.</div>
   </section>
 
-  <div class="foot"><span>Seong-Jun Kang · Curriculum Vitae · Keating Lab (Job Number 25959)</span><span>Based in Boston, MA · authorized to work in the United States, no visa sponsorship required</span><span>Updated August 2026</span></div>
+  <div class="foot"><span>Seong-Jun Kang · Curriculum Vitae · Hyman Lab</span><span>Available from September 2026 · based in Boston, MA · authorized to work in the United States, no visa sponsorship required</span><span>Updated August 2026</span></div>
 </div>
 </div>
 
+  <!-- ============ ASK (chat) ============ -->
+  <aside class="askpane" id="askpane" hidden>
+    <!-- Rendered from this file by .github/workflows/render-cv-pdf.yml on every push, so the
+         download is always the page the visitor is looking at. -->
+    <a class="cv-download" href="Seong-Jun-Kang-CV-Hyman.pdf" download="Seong-Jun-Kang-CV-Hyman.pdf">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+      Download CV (PDF)
+    </a>
+    <div class="cv-others"><b>Other versions of this CV</b>
+      <a href="../">General CV</a> · <a href="../for-keating-lab/">Keating Lab</a> · <a href="../for-bathe-lab/">Bathe Lab</a> · <a href="../for-joshi-lab/">Joshi Lab</a>
+    </div>
+
+    <div id="cv-chat"></div>
+  </aside>
+
 </div>
 
+<script src="../chat/ksj-chat.js"></script>
+<script>
+/* Point this at the chat backend once it is running. While it is an empty string the
+   panel stays hidden, so this file is safe to publish before the server exists. */
+var CHAT_API = "https://seong-jun-kang.web.app";
+
+(function () {
+  if (!CHAT_API) return;
+  var pane = document.getElementById('askpane');
+  pane.hidden = false;
+  KSJChat.mount('#cv-chat', {
+    apiBase: CHAT_API,
+    /* Copy tracks content/site.yaml in the KSJ-portfolio-fable repo, which is where the
+       chatbot and its corpus live. The disclaimer and the placeholder are shortened
+       against that source, because this panel is 390px wide and the full sentences wrap
+       to four lines and two lines. Everything else is word for word. */
+    title: 'Ask about this CV',
+    intro: 'This answers from my publications, research notes, and CV, and cites what it used.',
+    placeholder: 'Ask about a paper, a method, or a grant',
+    hint: 'Enter to send',
+    disclaimer: 'Generated by a language model. Check what matters against the cited source.',
+    /* Each string is run against the live endpoint before it ships. A suggestion the
+       corpus cannot answer makes a refusal the first thing a visitor sees, and one that
+       runs the model past its completion cap returns an empty answer. */
+    suggestions: [
+      "What has he built from scratch rather than run as an off-the-shelf tool?",
+      "What multiplexed measurements has he run, and on which platforms?",
+      "What machine learning has he validated, and how?",
+      "How does his wet-lab experience change the way he analyses data?"
+    ]
+  });
+})();
+</script>
 </body>
 </html>

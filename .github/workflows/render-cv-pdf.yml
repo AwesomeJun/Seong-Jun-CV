@@ -2,8 +2,9 @@
 # left it one revision behind, and at one point the page described one lab while the file
 # described another. This renders the PDF from index.html on every push instead.
 #
-# There is now more than one CV page: the general one at the site root and a lab-specific
-# one under keating/. Both are rendered by the same job, from the list below.
+# There is now more than one CV page: a general one at the site root and one per lab under
+# for-<lab>-lab/. They are all rendered by the same job, from the list below. The list is
+# printed by Seong-Jun-CV-for-labs/build.py, which is what writes the pages.
 name: Render CV PDF
 
 on:
@@ -11,7 +12,7 @@ on:
     branches: [main]
     paths:
       - 'index.html'
-      - 'keating/index.html'
+      - 'for-*-lab/index.html'
       - '.github/workflows/render-cv-pdf.yml'
   workflow_dispatch:
 
@@ -38,7 +39,10 @@ jobs:
           set -eu
           # "<source html>|<output pdf>", one pair per line.
           PAGES='index.html|Seong-Jun-Kang-CV.pdf
-          keating/index.html|keating/Seong-Jun-Kang-CV-Keating.pdf'
+          for-keating-lab/index.html|for-keating-lab/Seong-Jun-Kang-CV-Keating.pdf
+          for-bathe-lab/index.html|for-bathe-lab/Seong-Jun-Kang-CV-Bathe.pdf
+          for-joshi-lab/index.html|for-joshi-lab/Seong-Jun-Kang-CV-Joshi.pdf
+          for-hyman-lab/index.html|for-hyman-lab/Seong-Jun-Kang-CV-Hyman.pdf'
 
           sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
 
@@ -69,7 +73,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Seong-Jun-Kang-CV.pdf keating/Seong-Jun-Kang-CV-Keating.pdf
+          git add Seong-Jun-Kang-CV.pdf for-*-lab/*.pdf
           git diff --staged --quiet && echo "PDFs unchanged" && exit 0
           git commit -m "Re-render the CV PDFs from their pages"
           git push
