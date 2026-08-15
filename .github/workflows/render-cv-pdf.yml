@@ -1,6 +1,9 @@
 # The download button used to point at a PDF rendered by hand. Every edit to index.html
 # left it one revision behind, and at one point the page described one lab while the file
 # described another. This renders the PDF from index.html on every push instead.
+#
+# There is now more than one CV page: the general one at the site root and a lab-specific
+# one under keating/. Both are rendered by the same job, from the list below.
 name: Render CV PDF
 
 on:
@@ -8,6 +11,7 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'keating/index.html'
       - '.github/workflows/render-cv-pdf.yml'
   workflow_dispatch:
 
@@ -29,34 +33,43 @@ jobs:
         with:
           chrome-version: stable
 
-      - name: Render index.html to PDF
+      - name: Render each page to PDF
         run: |
-          # virtual-time-budget gives the webfont time to arrive; without it the first
-          # render can come out in the fallback face.
-          "$(which chrome || which google-chrome)" \
-            --headless --disable-gpu --no-sandbox \
-            --no-pdf-header-footer \
-            --virtual-time-budget=15000 \
-            --print-to-pdf=Seong-Jun-Kang-CV.pdf \
-            "file://$GITHUB_WORKSPACE/index.html"
+          set -eu
+          # "<source html>|<output pdf>", one pair per line.
+          PAGES='index.html|Seong-Jun-Kang-CV.pdf
+          keating/index.html|keating/Seong-Jun-Kang-CV-Keating.pdf'
 
-      - name: Check the page margins survived
-        run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
-          pdfinfo Seong-Jun-Kang-CV.pdf
-          # @page sets 13mm side margins. A render that ignores them puts ink at x=0,
-          # which is the failure this file exists to prevent, so fail the job instead
-          # of committing it.
-          LEFT=$(pdftotext -bbox -f 1 -l 1 Seong-Jun-Kang-CV.pdf - \
-                 | grep -o 'xMin="[0-9.]*"' | grep -o '[0-9.]*' | sort -g | head -1)
-          echo "left margin: ${LEFT}pt"
-          awk -v l="$LEFT" 'BEGIN { if (l < 20) { print "margins were dropped"; exit 1 } }'
+
+          echo "$PAGES" | while IFS='|' read -r SRC OUT; do
+            SRC=$(echo "$SRC" | xargs); OUT=$(echo "$OUT" | xargs)
+            echo "::group::$SRC -> $OUT"
+            # virtual-time-budget gives the webfont time to arrive; without it the first
+            # render can come out in the fallback face.
+            "$(which chrome || which google-chrome)" \
+              --headless --disable-gpu --no-sandbox \
+              --no-pdf-header-footer \
+              --virtual-time-budget=15000 \
+              --print-to-pdf="$OUT" \
+              "file://$GITHUB_WORKSPACE/$SRC"
+
+            pdfinfo "$OUT"
+            # @page sets 13mm side margins. A render that ignores them puts ink at x=0,
+            # which is the failure this file exists to prevent, so fail the job instead
+            # of committing it.
+            LEFT=$(pdftotext -bbox -f 1 -l 1 "$OUT" - \
+                   | grep -o 'xMin="[0-9.]*"' | grep -o '[0-9.]*' | sort -g | head -1)
+            echo "left margin: ${LEFT}pt"
+            awk -v l="$LEFT" 'BEGIN { if (l < 20) { print "margins were dropped"; exit 1 } }'
+            echo "::endgroup::"
+          done
 
       - name: Commit if it changed
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Seong-Jun-Kang-CV.pdf
-          git diff --staged --quiet && echo "PDF unchanged" && exit 0
-          git commit -m "Re-render the CV PDF from index.html"
+          git add Seong-Jun-Kang-CV.pdf keating/Seong-Jun-Kang-CV-Keating.pdf
+          git diff --staged --quiet && echo "PDFs unchanged" && exit 0
+          git commit -m "Re-render the CV PDFs from their pages"
           git push
