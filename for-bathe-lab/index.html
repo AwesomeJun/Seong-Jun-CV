@@ -256,7 +256,7 @@ ol.pubs li.pri::after{content:"";position:absolute;left:24px;top:8px;bottom:8px;
         <h1 class="name">Seong-Jun <span class="accent">Kang</span>, Ph.D.</h1>
         <div class="titles">
           <div class="t-em">Immunologist working in multiplexed protein and RNA measurement, in situ and at single-cell scale</div>
-          <div>Postdoctoral Associate applicant · Bathe Lab, MIT Department of Biological Engineering (Job Number 25864)</div>
+          <div>Postdoctoral Associate applicant · Bathe Lab, MIT Department of Biological Engineering</div>
         </div>
       </div>
       <div class="hright">
@@ -361,6 +361,10 @@ ol.pubs li.pri::after{content:"";position:absolute;left:24px;top:8px;bottom:8px;
     <div class="skillrow">
       <div class="lab">Computational</div>
       <div class="items">Python: scikit-learn, XGBoost/LightGBM/CatBoost, <b>PyTorch</b>; AUC-validated classifiers held out on independent cohorts; multimodal deep-learning integration (imaging + transcriptomic + clinical). Linux servers · R/RStudio · Git-based reproducible analysis.</div>
+    </div>
+    <div class="skillrow">
+      <div class="lab">LLM and vision-<br>language models</div>
+      <div class="items"><b>Finetuning.</b> LoRA adaptation of an open vision-language model (<b>Gemma 4 12B</b>, mlx-vlm) so that an amyloid pathology tile returns a structured JSON reading. The output schema is enforced during decoding, and the split is held out at the case level, checked on every run. Against the same model zero-shot on 800 held-out tiles, cored-plaque F1 went from 0.12 to 0.44 and cerebral amyloid angiopathy from 0.00 to 0.69. <b>Retrieval and agents.</b> A retrieval-augmented question-answering service written end to end: corpus chunking, BM25 and dense-vector retrieval fused by reciprocal rank, query expansion, and streamed answers that carry their sources. <b>FastAPI</b>, containerized, running on <b>Google Cloud Run</b>. It answers questions about this CV at kangseongjun.com.</div>
     </div>
     <div class="skillrow">
       <div class="lab">Microscopy &amp;<br>animal models</div>
@@ -473,7 +477,7 @@ ol.pubs li.pri::after{content:"";position:absolute;left:24px;top:8px;bottom:8px;
     </div>
   </section>
 
-  <div class="foot"><span>Seong-Jun Kang · Curriculum Vitae · Bathe Lab (Job Number 25864)</span><span>Available from September 2026 · based in Boston, MA · authorized to work in the United States, no visa sponsorship required</span><span>Updated August 2026</span></div>
+  <div class="foot"><span>Seong-Jun Kang · Curriculum Vitae · Bathe Lab</span><span>Available from September 2026 · based in Boston, MA · authorized to work in the United States, no visa sponsorship required</span><span>Updated August 2026</span></div>
 </div>
 </div>
 
@@ -486,7 +490,7 @@ ol.pubs li.pri::after{content:"";position:absolute;left:24px;top:8px;bottom:8px;
       Download CV (PDF)
     </a>
     <div class="cv-others"><b>Other versions of this CV</b>
-      <a href="../">General CV</a> · <a href="../for-keating-lab/">Keating Lab</a> · <a href="../for-joshi-lab/">Joshi Lab</a> · <a href="../for-hyman-lab/">Hyman Lab</a>
+      <a href="../">General CV</a> · <a href="../for-jameel-clinic/">Jameel Clinic</a> · <a href="../for-keating-lab/">Keating Lab</a> · <a href="../for-joshi-lab/">Joshi Lab</a> · <a href="../for-hyman-lab/">Hyman Lab</a>
     </div>
 
     <div id="cv-chat"></div>
@@ -519,7 +523,9 @@ var CHAT_API = "https://seong-jun-kang.web.app";
        corpus cannot answer makes a refusal the first thing a visitor sees, and one that
        runs the model past its completion cap returns an empty answer. */
     suggestions: [
-      "What analysis code has he written himself?"
+      "What multiplexed in situ imaging has he run?",
+      "What image analysis has he done on neurons?",
+      "Has he finetuned a vision-language model?"
     ]
   });
 })();
